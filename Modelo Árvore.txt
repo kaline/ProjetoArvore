@@ -1,0 +1,193 @@
+---- ÁRVORE BINÁRIA ----
+
+Nó da árvore
+typedef struct tree{
+    char Chave;           // Conteudo
+			  // Pode ser qualquer coisa
+    struct tree* Left;    // Ponteiro para Esquerda
+    struct tree* Right ;  // Ponteiro para Direita
+}Tree;
+ 
+Tree* pTree=NULL; // Ponteiro inicial  da árvore
+		  // Aponta para a raiz da árvore
+
+Inserir elementos na árvore
+void Insert( Tree** pTree, char iChave ){
+ 
+    if( (*pTree)==NULL ){
+             // Aloca um novo nó da árvore
+        (*pTree) =  (Tree*)malloc( sizeof(Tree));
+         
+        if( (*pT ree) ){
+             (*pTree)->Chave = iChave;
+             (*pTree)->Left = NULL;
+             (*pTree)->Right = NULL;
+        }
+    }
+// Enquanto ponteiro != NULL, existe elemento
+// Se menor insere à esquerda da raiz, se mai or à direita
+    else{
+        if( iChave < (*pTree)->Chave )
+             Insert( &(*pTree)->Left, iChave );
+        else
+             Insert( &(*pTree)->Right, iChave );
+    }
+}
+
+Pesquisar elemento na árvore
+void Search( Tree** pTree, char i Chave ){
+ 
+    if( (*pTree) == NULL  ){
+        / / ELEMENTO NAO ENCONTRADO OU NAO EXISTE
+        // Alterar conforme a necessidade do problema
+        r eturn;
+    }
+    else{
+        i f( iChave == (*pTree)->Chave ){
+             // ELEMENTO ENCONTRADO
+      // Alterar conforme a necessidade do pr oblema
+             return;
+        }
+        e lse{ // Vai descendo ate encontrar (ou nao) 
+             if( iChave < (*pTree)->Chave ){
+                 Search( &(*pTree) ->Left, iChave );
+                 return;
+             }
+             else{
+                 Search( &(*pTree) ->Right, iChave );
+                 return;
+             }
+        }
+    }
+}
+
+Remover elemen to da árvore
+void Remove( Tree** pTree, tipo C ){
+  
+    Tree* pN; // Ponteiro au xiliar
+      
+    if( (*pTree)==NULL ) // arvore nula
+        return ;
+    if( C == (*pTree)->Chave ){
+        pN = (*pTr ee);
+          
+        if( (*pT ree)->Left==NULL ) / / nao tem filho a Esq
+             (*pTree) = (*pTree)->Right;
+        else i f( (*pTree)->Right==NULL ) / /nao tem filho a Dir
+             (*pTree) = (*pTree)->Left;
+        else{  // tem ambos os filhos
+          
+             pN = Menor( &(*pTree)->Left );
+             (*pTree)->Chave = pN->Chave;
+        }
+  
+        pN=NULL;
+        return ;
+    }
+    else if( C < (*pTr ee)->Chave ){
+        Remove( &( *pTree)->Left );
+        return ;
+    }
+    else{
+        Remove( &( *pTree)->Right );
+        return ;
+    }
+}
+
+Percurso Infixo ( ou Em-ordem )
+void IN( Tree** pTree ){
+ 
+    if( (*pTree) != NULL ){
+     
+        IN( &(*pTr ee)->Left );
+  // Se necessitar de espaços entre cada eleme nto inserir aqui
+        printf ( "%c", (*pTree)->Chave );
+    
+        IN( &(*pTr ee)->Right );
+    }
+}
+
+Percurso Posfixo ( ou Pós-ordem )
+void POST( Tree** pTree ){
+ 
+    if( (*pTree) != NULL ){
+     
+        POST( &(*p Tree)->Left );
+        POST( &(*p Tree)->Right );
+         
+   // Se necessitar de espaços entre cada elemento inserir  aqui
+        printf ( "%c", ((*pTree)->Chave) );
+    }
+}
+
+Percurso por Nível
+queue<Tree*> Que; // Fila auxiliar
+void Nivel( Tree** pTree ){
+ 
+    Tree* pN=NULL;
+     
+    if( pTree != NULL ){
+     
+        Q ue.push( (*pTree) );
+        w hile( !( Que.empty() ) ){
+              
+             pN =  Que.front();
+             Que.pop();
+              
+             if( (pN->Left) != NULL )
+                 Que.push( pN->Lef t );
+             if( (pN->Right) != NULL )
+                 Que.push( pN->Rig ht );
+         
+             // Imprime elemento
+             printf( "%d", pN->Chave );
+        }
+    }
+}
+
+Percurso Prefixo ( ou Pré-ordem )
+void PRE( Tree** pTree ){
+     
+    if( (*pTree) != NULL  ){
+     
+        / / Se necessitar de espaços entre cada elemento
+        // inserir aqui
+        p rintf( "%c", (*pTree)->Chave );
+         
+        P RE( &(*pTree)->Left );
+        P RE( &(*pTree)->Right );
+    }
+}
+
+Chamada na main
+Insert( &pTree, Elemento);     // Elemento a ser inserido
+Search( &pTree, Elemento );   // Elemento a  ser procurado
+Remove( &pTree, Elemento );  // Element o a ser removido
+IN( &pTree );    PRE( &pTree );    POST( &pTr ee );
+
+Tree* Menor( Tree** pTree ){
+  
+    Tree* pAux = (*pTree);
+      
+    if( pAux->Right == NU LL ){// Encontrou o menor
+        ( *pTree) = (*pTree)->Left;
+        r eturn pAux;
+    }
+    else{ // Continua  a busca
+        // alterar se deseja o menor da esquerda ou dire ita
+        r eturn Menor( &(*pTree)->Right );
+    }
+}
+** Para não perder a característica de uma árvore binária não basta apenas 
+remover o elemento, deve substituir em  seu lugar o elemento mais à esquerda 
+do filho da direita ou o elemento mais a direita do filho da esquerda (mais 
+profundo). A função Menor é responsável de encontrar esse elemento **
+
+Conceitos
+Raiz → Primeiro nó da árvore
+Folha → Nó que não possui filhos
+Numeração → Raiz recebe nº 1 (índice 1), filho da esquerda  recebe o dobro de 
+seu pai (2i) e filho da direita o  dobro de seu pai mais 1 (2i  + 1).
+Nível → A raiz possui nível zero e o ní vel de cada elemento é o de seu pais 
+mais um
+Altura → É dada por log(n  ) ou o nº de arestas até a folha mais profunda.
