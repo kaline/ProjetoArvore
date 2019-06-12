@@ -60,7 +60,7 @@ node *insert(node *node, int dado)
     if (node == NULL)
         return newNode(dado);
 
-    /* Caso contrário, recur down the tree */
+    /* Caso contrário, percorrer a árvore */
     if (dado < node->dado)
         node->left = insert(node->left, dado);
     else if (dado > node->dado)
