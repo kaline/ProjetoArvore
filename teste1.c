@@ -1,3 +1,10 @@
+
+    //  Programação Estruturada:Trabalho final 1
+    //  Tópico:Árvore.
+    //  Autor: Kaline Brandão Farias Mesquita 
+    //         Calina Lídia.
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
@@ -121,10 +128,12 @@ int menu(node* root)
 
 int main()
 {
-
     system("cls");
     setlocale(LC_ALL, "pt_BR");
     int n;
+    FILE * pFile;
+
+    pFile = fopen("arvoreData.txt", "w");
 
     printf("Digite o tamanho da sua arvore:\n");
     node *root = NULL;
@@ -134,6 +143,7 @@ int main()
     {
         int dado1;
         scanf("%d", &dado1);
+             fprintf(pFile, "Dado %d %d\n",i+1, dado1);
 
         if (root == NULL)
         {
@@ -144,6 +154,7 @@ int main()
             insert(root, dado1);
         }
     }
+    fclose(pFile);
     menu(root);
     return 0;
 }
