@@ -94,6 +94,8 @@ node *insert(node *node, int dado)
 
 int main();
 
+system("cls");
+
 int menu(node* root)
 {
     printf("************** MENU **************\n");
