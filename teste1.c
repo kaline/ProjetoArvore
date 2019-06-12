@@ -42,6 +42,16 @@ node *newNode(int item)
     return temp;
 }
 
+void preorder(node *root)
+{
+    if (root != NULL)
+    {
+        preorder(root->left);
+        preorder(root->right);
+        printf("%d \n", root->dado);
+    }
+}
+
 //Cria uma BST traversal em ordem
 void inorder(node *root)
 {
@@ -50,6 +60,16 @@ void inorder(node *root)
         inorder(root->left);
         printf("%d \n", root->dado);
         inorder(root->right);
+    }
+}
+
+void porder(node *root)
+{
+    if (root != NULL)
+    {
+        porder(root->right);
+        printf("%d \n", root->dado);
+        porder(root->left);
     }
 }
 
