@@ -1,0 +1,304 @@
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+#include <windows.h>
+#include <locale.h>
+
+void gotoxy(int x, int y)
+{
+  COORD coord;
+  coord.X = x;
+  coord.Y = y;
+  SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
+typedef struct Contato {
+    int codigo;
+    char nome[41];
+    int numero;
+    char email[51];
+    int dia;
+    int mes;
+}tipoContato;
+
+typedef struct no *apontador;
+
+struct no {
+    tipoContato contato;
+    apontador esq;
+    apontador dir;
+};
+
+void insere(tipoContato x, apontador *p);
+void inserirNos(apontador *raiz);
+
+void visitaRaiz(apontador no);
+void pre_ordem(apontador p);
+void em_ordem(apontador p);
+void pos_ordem(apontador p);
+void caminhamentos(apontador raiz, int op);
+
+void antecessor(apontador q, apontador *r);
+void retira(tipoContato x, apontador *p, int *operacao);
+void removerNos(apontador *raiz);
+
+void pesquisa(tipoContato x, apontador *p);
+void pesquisaNos(apontador *raiz);
+
+int main() {
+    setlocale(LC_ALL,"Portuguese");
+
+    apontador raiz;
+    int op;
+
+    raiz = NULL;
+
+    do {
+        system("cls || clear");
+        gotoxy(10,  5); printf("MENU PRINCIPAL - Agenda de Contatos");
+        gotoxy(10,  6); printf("[ 1 ] Adicionar contatos");
+        gotoxy(10,  7); printf("[ 2 ] Pesquisar contatos");
+        gotoxy(10,  8); printf("[ 3 ] Listagem pré-ordem [R E D]");
+        gotoxy(10,  9); printf("[ 4 ] Listagem em-ordem [E R D]");
+        gotoxy(10, 10); printf("[ 5 ] Listagem pós-ordem [E D R]");
+        gotoxy(10, 11); printf("[ 6 ] Remover contatos");
+        gotoxy(10, 12); printf("[ 0 ] Encerrar o programa");
+        gotoxy(10, 13); printf("[   ] Opção desejada");
+
+        do {
+            gotoxy(12, 13); scanf("%d", &op);
+        } while ((op < 0) || (op > 5));
+
+        switch (op) {
+            case 1:
+                system("cls || clear");
+                inserirNos(&raiz);
+                break;
+            case 2:
+                system("cls || clear");
+                pesquisaNos(&raiz);
+                break;
+            case 3:
+                system("cls || clear");
+                caminhamentos(raiz, op);
+                break;
+            case 4:
+                system("cls || clear");
+                caminhamentos(raiz, op);
+                break;
+            case 5:
+                system("cls || clear");
+                caminhamentos(raiz, op);
+                break;
+            case 6:
+                system("cls || clear");
+                removerNos(&raiz);
+        }
+
+    } while (op != 0);
+}
+
+void insere(tipoContato x, apontador *p) {
+    if ((*p) == NULL) {
+        *p = (apontador) malloc(sizeof(struct no));
+        (*p)->contato = x;
+        (*p)->esq = NULL;
+        (*p)->dir = NULL;
+    }
+    else if (x.codigo < (*p)->contato.codigo)
+        insere(x, &((*p)->esq));
+    else insere(x, &((*p)->dir));
+}
+
+void inserirNos(apontador *raiz) {
+    tipoContato x;
+    while (1) {
+        system("cls || clear");
+        gotoxy(10,  5); printf("Informe um contato a ser inserido (-1 para voltar):\n");
+        gotoxy(10,  6); printf("Código: ");
+        scanf("%d", &x.codigo);
+        if (x.codigo == -1){
+           break;
+        }
+        gotoxy(10,  7); printf("Nome: ");
+        scanf("%s", x.nome);
+        gotoxy(10,  8); printf("Número: ");
+        scanf("%d", &x.numero);
+        gotoxy(10,  9); printf("E-mail: ");
+        scanf("%s", x.email);
+        gotoxy(10,  10); printf("Aniversário: ");
+        scanf("%d/%d", &x.dia, &x.mes);
+
+        insere(x, raiz);
+    }
+}
+
+void visitaRaiz(apontador no) {
+    printf("--------------------------------------\n");
+    printf("Código %d\n", no->contato.codigo);
+    printf("Nome: %s\n", no->contato.nome);
+    printf("Número: %d\n", no->contato.numero);
+    printf("E-mail: %s\n", no->contato.email);
+    printf("Aniversário: %02d/%02d\n", no->contato.dia, no->contato.mes);
+}
+
+void pre_ordem(apontador p) {
+    if (p != NULL) {
+        visitaRaiz(p);
+        pre_ordem(p->esq);
+        pre_ordem(p->dir);
+    }
+}
+
+void em_ordem(apontador p) {
+    if (p != NULL) {
+        em_ordem(p->esq);
+        visitaRaiz(p);
+        em_ordem(p->dir);
+    }
+}
+
+void pos_ordem(apontador p) {
+    if (p != NULL) {
+        pos_ordem(p->esq);
+        pos_ordem(p->dir);
+        visitaRaiz(p);
+    }
+}
+
+void caminhamentos(apontador raiz, int op) {
+    switch (op) {
+        case 3: {
+            printf("Listagem pré-ordem (ou pré-fixado) [R E D]:\n");
+            pre_ordem(raiz);
+            break;
+        }
+        case 4: {
+            printf("Listagem central (em-ordem ou infixado) [E R D]:\n");
+            em_ordem(raiz);
+            break;
+        }
+        case 5: {
+            printf("Listagem pós-ordem (ou pós-fixado) [E D R]:\n");
+            pos_ordem(raiz);
+        }
+    }
+    printf("\n\nPressione [qualquer botão] para continuar.");
+    getch();
+}
+
+void antecessor(apontador q, apontador *r) {
+    if ((*r)->dir != NULL)
+        antecessor(q, &((*r)->dir));
+    else {
+        q->contato = (*r)->contato;
+        q = *r;
+        *r = (*r)->esq;
+        free(q);
+    }
+}
+
+void retira(tipoContato x, apontador *p, int *operacao) {
+    apontador aux;
+    if ((*p) == NULL)
+        *operacao = 0;
+    else if (x.codigo < (*p)->contato.codigo)
+        retira(x, (&(*p)->esq), operacao);
+    else if (x.codigo > (*p)->contato.codigo)
+        retira(x, (&(*p)->dir), operacao);
+    else {
+        *operacao = 1;
+        if ((*p)->dir == NULL) {
+            aux = *p;
+            *p = (*p)->esq;
+            free(aux);
+        }
+        else if ((*p)->esq == NULL) {
+            aux = *p;
+            *p = (*p)->dir;
+            free(aux);
+        }
+        else antecessor((*p), (&(*p)->esq));
+    }
+}
+
+void removerNos(apontador *raiz) {
+    tipoContato x;
+    int operacao;
+    while (1) {
+        system("cls || clear");
+        gotoxy(10,  5); printf("Informe um contato a ser removido (-1 para voltar):\n");
+        gotoxy(10,  6); printf("Código: ");
+        scanf("%d", &x.codigo);
+        if (x.codigo == -1){
+           break;
+        }
+
+        retira(x, raiz, &operacao);
+
+        if (operacao == 1) {
+            gotoxy(10,  8); printf("Contato removido com sucesso !!!");
+        }
+        else {
+            gotoxy(10,  8); printf("Erro: Contato não encontrado.");
+        }
+
+        gotoxy(10,  10); printf("Pressione [algum botão] para continuar.");
+        getch();
+    }
+}
+
+void pesquisa(tipoContato x, apontador *p) {
+    if((*p) == NULL) {
+        printf("\nContato não encontrado.");
+    }
+    else{
+        if(x.codigo == (*p)->contato.codigo) {
+             visitaRaiz(*p);
+        }
+        else{
+             if(x.codigo < (*p)->contato.codigo) {
+                 pesquisa(x, &(*p)->esq);
+             }
+             else {
+                 pesquisa(x, &(*p)->dir);
+             }
+        }
+    }
+}
+
+void pesquisaNos(apontador *raiz){
+    tipoContato x;
+    while(1) {
+        system("cls || clear");
+        printf("Digite o código do contato (-1 para voltar):\n");
+        printf("Código: ");
+        scanf("%d", &x.codigo);
+        if(x.codigo == -1) {
+            break;
+        }
+
+        if((*raiz) == NULL) {
+            printf("\nContato não encontrado.");
+            break;
+        }
+        else {
+            if(x.codigo == (*raiz)->contato.codigo) {
+                visitaRaiz(*raiz);
+                break;
+            }
+            else{
+                if(x.codigo < (*raiz)->contato.codigo) {
+                    pesquisa(x, &(*raiz)->esq);
+                    break;
+                }
+                else {
+                    pesquisa(x, &(*raiz)->dir);
+                    break;
+                }
+            }
+        }
+    }
+    printf("\n\nPressione [qualquer botão] para continuar.");
+    getch();
+}
