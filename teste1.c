@@ -45,10 +45,11 @@ node *newNode(int item)
 void preorder(node *root)
 {
     if (root != NULL)
-    {
-        preorder(root->left);
-        preorder(root->right);
-        printf("%d \n", root->dado);
+    {        
+         printf("%d \n", root->dado);
+         preorder(root->left);
+         preorder(root->right);
+       
     }
 }
 
@@ -66,10 +67,11 @@ void inorder(node *root)
 void porder(node *root)
 {
     if (root != NULL)
-    {
+    {    
+        porder(root->left);
         porder(root->right);
         printf("%d \n", root->dado);
-        porder(root->left);
+        
     }
 }
 
